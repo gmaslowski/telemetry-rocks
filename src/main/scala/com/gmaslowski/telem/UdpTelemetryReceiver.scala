@@ -6,14 +6,14 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, actorRef2Scala}
 import akka.io.{IO, Udp}
 
 object UdpTelemetryReceiver {
-  def props(transformer: ActorRef) = Props(classOf[UdpTelemetryReceiver], transformer)
+  def props(transformer: ActorRef, host: String, port: Int) = Props(classOf[UdpTelemetryReceiver], transformer, host, port)
 }
 
-class UdpTelemetryReceiver(val transfomer: ActorRef) extends Actor with ActorLogging {
+class UdpTelemetryReceiver(val transformer: ActorRef, val host: String, val port: Int) extends Actor with ActorLogging {
 
   import context.system
 
-  val udpAddress = new InetSocketAddress("0.0.0.0", 20777)
+  val udpAddress = new InetSocketAddress(host, port)
 
   IO(Udp) ! Udp.Bind(self, udpAddress)
 
@@ -24,7 +24,7 @@ class UdpTelemetryReceiver(val transfomer: ActorRef) extends Actor with ActorLog
 
   def ready(socket: ActorRef): Receive = {
     case Udp.Received(data, _) =>
-      transfomer ! data
+      transformer ! data
     case Udp.Unbind => socket ! Udp.Unbind
     case Udp.Unbound => context.stop(self)
   }
