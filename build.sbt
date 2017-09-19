@@ -7,6 +7,9 @@ val akkaV = "2.5.4"
 val logbackV = "1.2.3"
 
 libraryDependencies ++= Seq(
+  // play
+  guice,
+  ws,
 
   // akka
   "com.typesafe.akka" %% "akka-actor" % akkaV,
@@ -16,3 +19,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % logbackV
 )
 
+enablePlugins(PlayScala)
+disablePlugins(PlayLayoutPlugin)
+PlayKeys.playMonitoredFiles ++= (sourceDirectories in (Compile, TwirlKeys.compileTemplates)).value

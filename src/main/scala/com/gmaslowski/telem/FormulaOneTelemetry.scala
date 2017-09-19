@@ -1,20 +1,20 @@
 package com.gmaslowski.telem
 
+import javax.inject.{Inject, Singleton}
+
 import akka.actor._
-import akka.util.ByteString
 import com.gmaslowski.telem.demo.DemoRecorder
 import com.typesafe.config.ConfigFactory
 
-object Bootstrap {
 
-  def main(args: Array[String]): Unit = {
-    val system = ActorSystem("f1-telemetry")
-    system.actorOf(FormulaOneTelemetry.props)
-  }
+@Singleton
+class Bootstrap @Inject()(system: ActorSystem) {
+  system.actorOf(FormulaOneTelemetry.props,"f1")
 }
 
 object FormulaOneTelemetry {
   def props = Props(classOf[FormulaOneTelemetry])
+  var webSocketHandler: Option[ActorRef] = Option.empty
 }
 
 class FormulaOneTelemetry extends Actor with ActorLogging {
@@ -29,10 +29,12 @@ class FormulaOneTelemetry extends Actor with ActorLogging {
       // record demo mode
       val demoRecorder = context.actorOf(DemoRecorder.props(config.getString("demo.filename")))
       val packetReceiver = context.actorOf(UdpTelemetryReceiver.props(demoRecorder, host, port))
-      demoRecorder ! ByteString("sssssasdas")
     } else {
       // normal start
-      val packetTransformer = context.actorOf(UdpPacketTransformer.props)
+      val wsHandler = context.actorOf(WebSocketHandler.props, "websocket-handler")
+      // todo: not the way to do it !
+      FormulaOneTelemetry.webSocketHandler = Option(wsHandler)
+      val packetTransformer = context.actorOf(UdpPacketTransformer.props(wsHandler))
       val packetReceiver = context.actorOf(UdpTelemetryReceiver.props(packetTransformer, host, port))
     }
   }

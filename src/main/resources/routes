@@ -1,0 +1,2 @@
+GET     /                           com.gmaslowski.telem.controllers.HomeController.index
+GET     /ws                         com.gmaslowski.telem.controllers.HomeController.ws
