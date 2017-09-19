@@ -12,21 +12,24 @@ object UdpTelemetryReceiver {
 class UdpTelemetryReceiver(val transformer: ActorRef, val host: String, val port: Int) extends Actor with ActorLogging {
 
   import context.system
-
   val udpAddress = new InetSocketAddress(host, port)
 
   IO(Udp) ! Udp.Bind(self, udpAddress)
 
   def receive = {
-    case Udp.Bound(local) =>
+    case Udp.Bound(_) =>
       context.become(ready(sender()))
   }
 
   def ready(socket: ActorRef): Receive = {
+
     case Udp.Received(data, _) =>
       transformer ! data
-    case Udp.Unbind => socket ! Udp.Unbind
-    case Udp.Unbound => context.stop(self)
+
+    case Udp.Unbind =>
+      socket ! Udp.Unbind
+
+    case Udp.Unbound =>
+      context.stop(self)
   }
 }
-

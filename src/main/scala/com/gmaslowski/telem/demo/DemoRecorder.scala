@@ -1,0 +1,74 @@
+package com.gmaslowski.telem.demo
+
+import java.nio.file.{Files, Paths}
+import java.util.concurrent.TimeUnit.SECONDS
+
+import akka.actor.{ActorLogging, FSM, Props, ReceiveTimeout}
+import akka.util.ByteString
+import com.gmaslowski.telem.demo.DemoRecorder._
+
+import scala.collection.immutable.Queue
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
+
+object DemoRecorder {
+  def props(filename: String) = Props(classOf[DemoRecorder], filename)
+
+  // states
+  sealed trait State
+  case object Inactive extends State
+  case object Recording extends State
+  case object StoppedRecording extends State
+
+  // data
+  sealed trait Data
+  case object Uninitialized extends Data
+  final case class RecordedData(packetList: Queue[ByteString]) extends Data
+}
+
+class DemoRecorder(val filename: String) extends FSM[State, Data] with ActorLogging {
+
+  startWith(Inactive, Uninitialized)
+
+  when(Inactive) {
+    case Event(packet: ByteString, Uninitialized) =>
+      goto(Recording) using RecordedData(Queue.empty.enqueue(packet))
+  }
+
+  when(Recording) {
+    case Event(packet: ByteString, RecordedData(packetList)) =>
+      stay using RecordedData(packetList.enqueue(packet))
+
+    case Event(ReceiveTimeout, data: RecordedData) =>
+      implicit val ec: ExecutionContext = context.dispatcher
+      log.info("Didn't receive any data since last 5 seconds. Stopping demo recording.")
+
+      Future {
+        data.packetList.foreach(packet => {
+          Files.write(Paths.get(filename), packet.toArray)
+          log.info(s"File $filename created.")
+        })
+      } onComplete {
+        case Success(_) => log.info("Successfully saved file.")
+        case Failure(t) => log.error(s"Error while saving file - ${t.getMessage}.")
+      }
+
+      goto(StoppedRecording) using data
+  }
+
+  when(StoppedRecording) {
+    case Event(e, s) =>
+      log.warning("Received unhandled request {} in state {}/{}", e, stateName, s)
+      stay
+  }
+
+  onTransition {
+    case Inactive -> Recording =>
+      context.setReceiveTimeout(Duration(5, SECONDS))
+    case Recording -> StoppedRecording =>
+      context.setReceiveTimeout(Duration.Undefined)
+  }
+
+  initialize()
+}

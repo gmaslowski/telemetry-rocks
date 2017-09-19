@@ -18,6 +18,7 @@ class UdpPacketTransformer extends Actor with ActorLogging {
       val revs = UdpPacketTransformer.byteFromPacket(data, 267)
       val pitSpeedLimit = UdpPacketTransformer.byteFromPacket(data, 262)
       val limiterInfo = UdpPacketTransformer.byteFromPacket(data, 261)
+
       log.info(s"current info ${speed} ${time} ${revs} ${pitSpeedLimit} ${limiterInfo}")
   }
 }
