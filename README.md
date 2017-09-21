@@ -14,7 +14,9 @@ sbt run
 And navigate to: [http://localhost:9000](http://localhost:9000)
 
 __**Note**__: There's a demo file recorder using the `DemoRecorder` actor. By using the `DemoPlayer` actor it's
-possible to play dumped UDP telemetry from this run: (todo: add youtube link)
+possible to play dumped UDP telemetry (`demo.f1t`) from this run:
+
+[![F1 Demo Run](https://img.youtube.com/vi/749N3TgkqGU/0.jpg)](https://www.youtube.com/watch?v=749N3TgkqGU)
 
 __**Note**__: For recording and playing recorded files, please see `demo` configuration section in `application.conf`:
 ```
