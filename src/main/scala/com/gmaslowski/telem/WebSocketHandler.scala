@@ -16,7 +16,7 @@ class WebSocketHandler extends Actor with ActorLogging {
   override def receive = {
     case Register(client) =>
       clients = client :: clients
-      client ! "WebSocket Initialized"
+      client ! "WebSocket-Initialized"
 
     case message: String => clients.foreach(_ ! message)
   }

@@ -4,7 +4,10 @@
 <html>
 <head>
     <title>F1 Telemetry Dashboard</title>
-    <script type="text/javascript">
+</head>
+<body>
+<div id="content"></div>
+<script type="text/javascript">
            var ws = new WebSocket("ws://localhost:9000/ws");
 
            ws.onopen = function(){};
@@ -21,10 +24,6 @@
               socket.close();
            };
 
-
-    </script>
-</head>
-<body>
-<div id="content"></div>
+</script>
 </body>
 </html>

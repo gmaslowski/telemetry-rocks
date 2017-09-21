@@ -45,10 +45,8 @@ class DemoRecorder(val filename: String) extends FSM[State, Data] with ActorLogg
       log.info("Didn't receive any data since last 5 seconds. Stopping demo recording.")
 
       Future {
-        data.packetList.foreach(packet => {
-          Files.write(Paths.get(filename), packet.toArray)
-          log.info(s"File $filename created.")
-        })
+        Files.write(Paths.get(filename), data.packetList.flatMap(_.toArray).toArray)
+        log.info(s"File $filename created.")
       } onComplete {
         case Success(_) => log.info("Successfully saved file.")
         case Failure(t) => log.error(s"Error while saving file - ${t.getMessage}.")

@@ -15,13 +15,9 @@ class UdpPacketTransformer(val webSocketHandler: ActorRef) extends Actor with Ac
     case data: ByteString =>
 
       val speed = UdpPacketTransformer.floatFromPacket(data, 28, 32)
-      val time = UdpPacketTransformer.floatFromPacket(data, 0, 4)
-      val revs = UdpPacketTransformer.byteFromPacket(data, 267)
-      val pitSpeedLimit = UdpPacketTransformer.byteFromPacket(data, 262)
-      val limiterInfo = UdpPacketTransformer.byteFromPacket(data, 261)
+      // val revs = UdpPacketTransformer.byteFromPacket(data, 332) // rev leds!
+      // val engineRate = UdpPacketTransformer.floatFromPacket(data, 158, 162)
 
-      // log.info(s"current info ${speed} ${time} ${revs} ${pitSpeedLimit} ${limiterInfo}")
-
-      webSocketHandler ! s"${(speed * 3.6).toInt}"
+      webSocketHandler ! s"${(speed * 3.6).round}"
   }
 }
