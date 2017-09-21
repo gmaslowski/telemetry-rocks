@@ -1,5 +1,6 @@
 package com.gmaslowski.telem.demo
 
+import java.io.FileOutputStream
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -45,7 +46,12 @@ class DemoRecorder(val filename: String) extends FSM[State, Data] with ActorLogg
       log.info("Didn't receive any data since last 5 seconds. Stopping demo recording.")
 
       Future {
-        Files.write(Paths.get(filename), data.packetList.flatMap(_.toArray).toArray)
+        Files.delete(Paths.get(filename))
+        val output = new FileOutputStream(filename, true)
+        data.packetList.foreach(byteString =>{
+          output.write(byteString.toArray[Byte])
+        })
+        output.close()
         log.info(s"File $filename created.")
       } onComplete {
         case Success(_) => log.info("Successfully saved file.")
