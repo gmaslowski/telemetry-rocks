@@ -5,10 +5,16 @@ f1game-telemetry
 
 ### Development
 
-There's a demo file recorder using the `DemoRecorder` actor. By using the `DemoPlayer` actor it's
+Just invoke (defaults to playing provided demo run):
+
+```
+sbt run
+```
+
+__**Note**__: There's a demo file recorder using the `DemoRecorder` actor. By using the `DemoPlayer` actor it's
 possible to play dumped UDP telemetry from this run: (todo: add youtube link)
 
-*Note*: For recording and playing recorded files, please see `demo` configuration section in `application.conf`:
+__**Note**__: For recording and playing recorded files, please see `demo` configuration section in `application.conf`:
 ```
 demo {
   record = false
