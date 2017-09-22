@@ -4,15 +4,18 @@ import javax.inject.{Inject, Singleton}
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
+import com.gmaslowski.telem.api.TelemetryWebSocketApi.CarData
+import com.gmaslowski.telem.api.TelemetryWebSocketApiTransformers
 import com.gmaslowski.telem.{FormulaOneTelemetry, WebSocketClient}
 import play.api.Logger
+import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 
 @Singleton
 class HomeController @Inject()(cc: ControllerComponents)
                               (implicit system: ActorSystem, mat: Materializer)
-  extends AbstractController(cc) with SameOriginCheck {
+  extends AbstractController(cc) with SameOriginCheck with TelemetryWebSocketApiTransformers {
 
   val logger = play.api.Logger(getClass)
 
@@ -20,7 +23,7 @@ class HomeController @Inject()(cc: ControllerComponents)
     Ok(views.html.index())
   }
 
-  def ws = WebSocket.accept[String, String] { request =>
+  def ws = WebSocket.accept[String, CarData] { request =>
     ActorFlow.actorRef { out =>
       WebSocketClient.props(FormulaOneTelemetry.webSocketHandler.get, out)
     }

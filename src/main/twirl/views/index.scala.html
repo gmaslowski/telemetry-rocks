@@ -4,25 +4,50 @@
 <html>
 <head>
     <title>F1 Telemetry Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet">
 </head>
 <body>
-<div id="content"></div>
+
+<div id="content" style="font-family: 'Orbitron', sans-serif; text-align: center; margin-left: auto;margin-right: auto;">
+    <div id="speed" style="font-size: 25px; width: 200px; margin: 0px auto; margin-bottom: 30px;"></div>
+    <div>
+        <div id="gauge" class="200x160px"></div>
+    </div>
+    <div id="gear" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script type="text/javascript">
-           var ws = new WebSocket("ws://localhost:9000/ws");
 
-           ws.onopen = function(){};
+var g = null;
+var init = true;
+var ws = new WebSocket("ws://localhost:9000/ws");
 
-           ws.onmessage = function (evt)
-           {
-              var received_msg = evt.data;
-              document.getElementById("content").innerHTML = received_msg;
-           };
+ws.onopen = function(){};
+ws.onmessage = function (evt)
+{
+    var carData = JSON.parse(evt.data);
+    document.getElementById("speed").innerHTML = carData.speed + " kmh";
+    document.getElementById("gear").innerHTML = carData.gear;
 
-           ws.onclose = function(){};
+    if(init == true && carData.revs.maxRevs != 0) {
+        g = new JustGage({
+            id: "gauge",
+            value: 0,
+            min: carData.revs.minRevs,
+            max: carData.revs.maxRevs,
+            title: "Revs",
+            titleFontFamily: "Orbitron",
+            valueFontFamily: "Orbitron"
+        });
+        init = false;
+    }
+    g.refresh(carData.revs.curRevs); // set actual value
+};
 
-           window.onbeforeunload = function(event) {
-              socket.close();
-           };
+ws.onclose = function(){};
+
+window.onbeforeunload = function(event) { socket.close();};
 
 </script>
 </body>
