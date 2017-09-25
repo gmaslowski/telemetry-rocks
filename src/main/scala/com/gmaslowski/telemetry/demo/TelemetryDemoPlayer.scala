@@ -1,15 +1,15 @@
-package com.gmaslowski.telem.demo
+package com.gmaslowski.telemetry.demo
 
 import java.nio.file.{Files, Paths}
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.util.ByteString
-import com.gmaslowski.telem.demo.DemoPlayer.{PlayPackets, PlayRecordedDemo}
+import com.gmaslowski.telemetry.demo.TelemetryDemoPlayer.{PlayPackets, PlayRecordedDemo}
 
 import scala.concurrent.duration._
 
-object DemoPlayer {
-  def props(demoDataReceiver: ActorRef) = Props(classOf[DemoPlayer], demoDataReceiver)
+object TelemetryDemoPlayer {
+  def props(demoDataReceiver: ActorRef) = Props(classOf[TelemetryDemoPlayer], demoDataReceiver)
 
   val PacketSize = 1237
 
@@ -18,7 +18,7 @@ object DemoPlayer {
   case object PlayPackets
 }
 
-class DemoPlayer(demoDataReceiver: ActorRef) extends Actor with ActorLogging {
+class TelemetryDemoPlayer(demoDataReceiver: ActorRef) extends Actor with ActorLogging {
 
   implicit val ec = context.dispatcher
 
@@ -26,9 +26,9 @@ class DemoPlayer(demoDataReceiver: ActorRef) extends Actor with ActorLogging {
 
   override def receive = {
     case PlayRecordedDemo(fromFile) =>
-      // be extra careful; it loads all to memory
+      // todo: be extra careful; it loads all to memory
       val readPackets = Files.readAllBytes(Paths.get(fromFile))
-      packetsIterator = readPackets.grouped(DemoPlayer.PacketSize)
+      packetsIterator = readPackets.grouped(TelemetryDemoPlayer.PacketSize)
       context.system.scheduler.scheduleOnce(33 milliseconds, self, PlayPackets)
 
     case PlayPackets =>

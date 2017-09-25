@@ -1,2 +1,2 @@
-GET     /                           com.gmaslowski.telem.controllers.HomeController.index
-GET     /ws                         com.gmaslowski.telem.controllers.HomeController.ws
+GET     /                           com.gmaslowski.telemetry.controllers.TelemetryController.index
+GET     /ws                         com.gmaslowski.telemetry.controllers.TelemetryController.ws

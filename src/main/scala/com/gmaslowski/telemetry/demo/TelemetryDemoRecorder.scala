@@ -1,4 +1,4 @@
-package com.gmaslowski.telem.demo
+package com.gmaslowski.telemetry.demo
 
 import java.io.FileOutputStream
 import java.nio.file.{Files, Paths}
@@ -6,15 +6,15 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import akka.actor.{ActorLogging, FSM, Props, ReceiveTimeout}
 import akka.util.ByteString
-import com.gmaslowski.telem.demo.DemoRecorder._
+import com.gmaslowski.telemetry.demo.TelemetryDemoRecorder._
 
 import scala.collection.immutable.Queue
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-object DemoRecorder {
-  def props(filename: String) = Props(classOf[DemoRecorder], filename)
+object TelemetryDemoRecorder {
+  def props(filename: String) = Props(classOf[TelemetryDemoRecorder], filename)
 
   // states
   sealed trait State
@@ -28,7 +28,7 @@ object DemoRecorder {
   final case class RecordedData(packetList: Queue[ByteString]) extends Data
 }
 
-class DemoRecorder(val filename: String) extends FSM[State, Data] with ActorLogging {
+class TelemetryDemoRecorder(val filename: String) extends FSM[State, Data] with ActorLogging {
 
   startWith(Inactive, Uninitialized)
 

@@ -1,9 +1,9 @@
-package com.gmaslowski.telem
+package com.gmaslowski.telemetry.ws
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.gmaslowski.telem.WebSocketHandler.Register
-import com.gmaslowski.telem.api.TelemetryWebSocketApi
-import com.gmaslowski.telem.api.TelemetryWebSocketApi.CarData
+import com.gmaslowski.telemetry.ws.WebSocketHandler.Register
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.CarData
 
 object WebSocketHandler {
   def props = Props(classOf[WebSocketHandler])

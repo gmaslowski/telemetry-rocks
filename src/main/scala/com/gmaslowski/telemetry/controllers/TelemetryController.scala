@@ -1,20 +1,20 @@
-package com.gmaslowski.telem.controllers
+package com.gmaslowski.telemetry.controllers
 
 import javax.inject.{Inject, Singleton}
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import com.gmaslowski.telem.api.TelemetryWebSocketApi.CarData
-import com.gmaslowski.telem.api.TelemetryWebSocketApiTransformers
-import com.gmaslowski.telem.{FormulaOneTelemetry, WebSocketClient}
+import com.gmaslowski.telemetry.FormulaOneTelemetry
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.CarData
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApiTransformers
+import com.gmaslowski.telemetry.ws.WebSocketClient
 import play.api.Logger
-import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 
 @Singleton
-class HomeController @Inject()(cc: ControllerComponents)
-                              (implicit system: ActorSystem, mat: Materializer)
+class TelemetryController @Inject()(cc: ControllerComponents)
+                                   (implicit system: ActorSystem, mat: Materializer)
   extends AbstractController(cc) with SameOriginCheck with TelemetryWebSocketApiTransformers {
 
   val logger = play.api.Logger(getClass)
