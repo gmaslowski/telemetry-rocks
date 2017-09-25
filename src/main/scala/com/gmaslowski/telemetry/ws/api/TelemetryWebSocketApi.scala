@@ -6,7 +6,14 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
 
 object TelemetryWebSocketApi {
 
-  case class CarData(speed: Int, gear: Int, revs: Revs)
+  case class CarData(speed: Int,
+                     gear: Int,
+                     tyreCompound: String,
+                     team: String,
+                     sector_1: Float,
+                     sector_2: Float,
+                     lap: Float,
+                     revs: Revs)
   case class Revs(curRevs: Int, minRevs: Int, maxRevs: Int)
   case class CarInitialData(car: String)
 
@@ -14,7 +21,7 @@ object TelemetryWebSocketApi {
   case class GearboxInitialData()
 
   val NoRevs = Revs(0, 0, 0)
-  val EmptyCarData = CarData(0, 0, NoRevs)
+  val EmptyCarData = CarData(0, 0, "", "", 0.0f, 0.0f, 0.0f, NoRevs)
 }
 
 trait TelemetryWebSocketApiTransformers {

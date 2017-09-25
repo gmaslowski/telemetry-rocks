@@ -3,6 +3,7 @@ package com.gmaslowski.telemetry
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.util.ByteString
 import com.gmaslowski.telemetry.ByteStringReader._
+import com.gmaslowski.telemetry.F1Enums._
 import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.{CarData, Revs}
 
 object TelemetryReceiver {
@@ -14,15 +15,22 @@ class TelemetryReceiver(val webSocketHandler: ActorRef) extends Actor with Actor
   val telemetryUnmarshaller = context.actorOf(TelemetryUnmarshaller.props)
 
   override def receive = {
-    case data: ByteString =>
-      telemetryUnmarshaller forward data
+    case packet: ByteString =>
+      telemetryUnmarshaller forward packet
 
-      val speed = data.floatFromPacket(8)
-      val engineRate = data.floatFromPacket(38)
-      val gear = data.floatFromPacket(34)
-      val idleRevs = data.floatFromPacket(65)
-      val maxRevs = data.floatFromPacket(64)
-
-      webSocketHandler ! CarData((speed * 3.6).round.toInt, gear.toInt - 1, Revs(engineRate.toInt, 0, maxRevs.toInt))
+      webSocketHandler ! CarData(
+        (packet.m_speed * 3.6).round.toInt,
+        packet.m_gear.toInt - 1,
+        packet.m_tyre_compound.asTyre,
+        packet.m_team_info.toInt.asTeam,
+        packet.m_sector1_time,
+        packet.m_sector2_time,
+        packet.m_last_lap_time,
+        Revs(
+          packet.m_engineRate.toInt,
+          0,
+          packet.m_max_rpm.toInt
+        )
+      )
   }
 }

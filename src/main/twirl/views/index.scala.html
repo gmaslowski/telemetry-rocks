@@ -14,6 +14,20 @@
         <div id="gauge" class="200x160px"></div>
     </div>
     <div id="gear" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    <div id="tyre_compound" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    <div id="team" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    <div>
+        <div>Sector 1</div>
+        <div id="sector_1" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    </div>
+    <div>
+        <div>Sector 2</div>
+        <div id="sector_2" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    </div>
+    <div>
+        <div>Lap</div>
+        <div id="lap" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+    </div>
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
@@ -29,6 +43,11 @@ ws.onmessage = function (evt)
     var carData = JSON.parse(evt.data);
     document.getElementById("speed").innerHTML = carData.speed + " kmh";
     document.getElementById("gear").innerHTML = carData.gear;
+    document.getElementById("tyre_compound").innerHTML = carData.tyreCompound;
+    document.getElementById("team").innerHTML = carData.team;
+    document.getElementById("sector_1").innerHTML = carData.sector_1;
+    document.getElementById("sector_2").innerHTML = carData.sector_2;
+    document.getElementById("lap").innerHTML = carData.lap;
 
     if(init == true && carData.revs.maxRevs != 0) {
         g = new JustGage({

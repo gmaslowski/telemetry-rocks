@@ -10,13 +10,13 @@ object TelemetryUnmarshaller {
 
 class TelemetryUnmarshaller extends Actor with ActorLogging {
   override def receive = {
-    case data: ByteString => {
+    case packet: ByteString => {
 
-      val speed = data.floatFromPacket(8)
-      val engineRate = data.floatFromPacket(38)
-      val gear = data.floatFromPacket(34)
-      val idleRevs = data.floatFromPacket(65)
-      val maxRevs = data.floatFromPacket(64)
+      val speed = packet.m_speed
+      val engineRate = packet.m_engineRate
+      val gear = packet.m_gear
+      val idleRevs = packet.m_idle_rpm
+      val maxRevs = packet.m_max_rpm
 
       // webSocketHandler ! CarData((speed * 3.6).round.toInt, gear.toInt - 1, Revs(engineRate.toInt, idleRevs.toInt, maxRevs.toInt))
     }
