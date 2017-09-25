@@ -7,6 +7,8 @@ import com.gmaslowski.telem.demo.DemoPlayer.{PlayPackets, PlayRecordedDemo}
 import com.gmaslowski.telem.demo.{DemoPlayer, DemoRecorder}
 import com.typesafe.config.ConfigFactory
 
+import scala.concurrent.duration._
+
 
 @Singleton
 class Bootstrap @Inject()(system: ActorSystem) {
@@ -21,7 +23,6 @@ object FormulaOneTelemetry {
 class FormulaOneTelemetry extends Actor with ActorLogging {
   override def preStart = {
 
-    import scala.concurrent.duration._
     implicit val ec = context.dispatcher
 
     val config = ConfigFactory.defaultApplication()

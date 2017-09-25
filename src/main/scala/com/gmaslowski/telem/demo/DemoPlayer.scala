@@ -6,6 +6,8 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.util.ByteString
 import com.gmaslowski.telem.demo.DemoPlayer.{PlayPackets, PlayRecordedDemo}
 
+import scala.concurrent.duration._
+
 object DemoPlayer {
   def props(demoDataReceiver: ActorRef) = Props(classOf[DemoPlayer], demoDataReceiver)
 
@@ -18,7 +20,6 @@ object DemoPlayer {
 
 class DemoPlayer(demoDataReceiver: ActorRef) extends Actor with ActorLogging {
 
-  import scala.concurrent.duration._
   implicit val ec = context.dispatcher
 
   var packetsIterator: Iterator[Array[Byte]] = Iterator.empty
