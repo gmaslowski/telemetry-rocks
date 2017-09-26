@@ -9,7 +9,6 @@ object UdpTelemetryPacketValidator {
 
   // api
   case class Validate(packet: ByteString)
-
   case class ValidPacket(data: ByteString)
   case class InvalidPacket(data: ByteString)
 
@@ -17,7 +16,7 @@ object UdpTelemetryPacketValidator {
   val ValidPacketSize = 1237
 }
 
-trait UdpTelemetryPacketValidator extends Actor with ActorLogging {
+class UdpTelemetryPacketValidator extends Actor with ActorLogging {
 
   override def receive = {
     case Validate(packet) =>

@@ -29,12 +29,12 @@ class TelemetryDemoPlayer(demoDataReceiver: ActorRef) extends Actor with ActorLo
       // todo: be extra careful; it loads all to memory
       val readPackets = Files.readAllBytes(Paths.get(fromFile))
       packetsIterator = readPackets.grouped(TelemetryDemoPlayer.PacketSize)
-      context.system.scheduler.scheduleOnce(33 milliseconds, self, PlayPackets)
+      context.system.scheduler.scheduleOnce(20 milliseconds, self, PlayPackets)
 
     case PlayPackets =>
       if (packetsIterator.hasNext) {
         demoDataReceiver ! ByteString(packetsIterator.next())
-        context.system.scheduler.scheduleOnce(33 milliseconds, self, PlayPackets)
+        context.system.scheduler.scheduleOnce(20 milliseconds, self, PlayPackets)
       }
   }
 }

@@ -9,31 +9,52 @@
 <body>
 
 <div id="content" style="font-family: 'Orbitron', sans-serif; text-align: center; margin-left: auto;margin-right: auto;">
-    <div id="speed" style="font-size: 25px; width: 200px; margin: 0px auto; margin-bottom: 30px;"></div>
-    <div>
-        <div id="gauge" class="200x160px"></div>
-    </div>
-    <div id="gear" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    <div id="tyre_compound" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    <div id="team" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    <div>
-        <div>Sector 1</div>
-        <div id="sector_1" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    </div>
-    <div>
-        <div>Sector 2</div>
-        <div id="sector_2" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    </div>
-    <div>
-        <div>Lap</div>
-        <div id="lap" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
-    </div>
+    <table>
+        <tr>
+            <td>
+                <div id="speed" style="font-size: 25px; width: 200px; margin: 0px auto; margin-bottom: 30px;"></div>
+                <div>
+                    <div id="gauge" class="200x160px"></div>
+                    <div id="gauge-throttle" class="50x40px"></div>
+                    <div id="gauge-break" class="50x40px"></div>
+                </div>
+                <div id="gear" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+            </td>
+            <td>
+                <div id="tyre_compound"
+                     style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+                <div id="team" style="font-size: 30px; width: 200px; margin: 0px auto; margin-top: 30px;"></div>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>Sector 1: </td>
+                        <td id="sector_1" ></td>
+                    </tr>
+                    <tr>
+                        <td>Sector 2: </td>
+                        <td id="sector_2" ></td>
+                    </tr>
+                    <tr>
+                        <td>Lap: </td>
+                        <td id="lap" ></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <canvas id="track" style="border: 1px solid black;" width="500px" height="500px"></canvas>
+            </td>
+        </tr>
+    </table>
+
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script type="text/javascript">
 
 var g = null;
+var g_throttle = null;
+var g_brake = null;
 var init = true;
 var ws = new WebSocket("ws://localhost:9000/ws");
 
@@ -42,7 +63,55 @@ ws.onmessage = function (evt)
 {
     var json = JSON.parse(evt.data);
 
+    if(json.dataType === 'LapData') {
+        document.getElementById("sector_1").innerHTML = json.sector1.toFixed(3);
+        document.getElementById("sector_2").innerHTML = json.sector2.toFixed(3);
+        document.getElementById("lap").innerHTML = json.lap.toFixed(3);
+    }
+
     if(json.dataType === 'LiveData') {
+
+        var canvas = document.getElementById("track");
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#FF0000";
+        ctx.fillRect(json.x + 250, json.y + 250, 1, 1);
+
+        if(g_brake === null && g_throttle === null) {
+            g_throttle = new JustGage({
+                id: "gauge-throttle",
+                value: 0,
+                min: 0,
+                max: 1,
+                title: "Throttle",
+                titleFontFamily: "Orbitron",
+                valueFontFamily: "Orbitron",
+                levelColors: ["#008000"],
+                startAnimationTime: 5,
+                startAnimationType: "linear",
+                refreshAnimationTime: 5,
+                refreshAnimationType: "linear",
+                hideMinMax: true,
+                hideValue: true
+            });
+
+            g_break = new JustGage({
+                id: "gauge-break",
+                value: 0,
+                min: 0,
+                max: 1,
+                title: "Break",
+                titleFontFamily: "Orbitron",
+                valueFontFamily: "Orbitron",
+                levelColors: ["#871919"],
+                startAnimationTime: 5,
+                startAnimationType: "linear",
+                refreshAnimationTime: 5,
+                refreshAnimationType: "linear",
+                hideMinMax: true,
+                hideValue: true
+            });
+        }
+
         document.getElementById("speed").innerHTML = json.speed + " kmh";
         document.getElementById("gear").innerHTML = json.gear;
         document.getElementById("sector_1").innerHTML = json.sector_1;
@@ -51,30 +120,36 @@ ws.onmessage = function (evt)
         if(g != null) {
             g.refresh(json.revs); // set actual value
         }
+        if(g_break != null && g_throttle != null) {
+            g_break.refresh(json.break); // set actual value
+            g_throttle.refresh(json.throttle); // set actual value
+        }
     }
 
     if(json.dataType === 'CarConfiguration') {
         document.getElementById("tyre_compound").innerHTML = json.tyre.compoundName;
         document.getElementById("team").innerHTML = json.team.teamName;
 
-        if(init == true && json.engine.maxRevs != 0) {
-            g = new JustGage({
-                id: "gauge",
-                value: 0,
-                min: json.engine.idleRevs,
-                max: json.engine.maxRevs,
-                title: "Revs",
-                titleFontFamily: "Orbitron",
-                valueFontFamily: "Orbitron"
-            });
-            init = false;
-        }
+        g = new JustGage({
+            id: "gauge",
+            value: 0,
+            min: json.engine.idleRevs,
+            max: json.engine.maxRevs,
+            title: "Revs",
+            titleFontFamily: "Orbitron",
+            valueFontFamily: "Orbitron",
+            startAnimationTime: 5,
+            startAnimationType: "linear",
+            refreshAnimationTime: 5,
+            refreshAnimationType: "linear"
+        });
     }
 };
 
 ws.onclose = function(){};
 
 window.onbeforeunload = function(event) { socket.close();};
+
 
 </script>
 </body>

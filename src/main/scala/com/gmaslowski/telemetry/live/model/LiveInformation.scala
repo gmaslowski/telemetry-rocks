@@ -13,13 +13,18 @@ object LiveInformation {
 class LiveInformation extends Actor with ActorLogging {
   override def receive = {
     case (packet: ByteString, receiver: ActorRef) =>
+
       receiver ! LiveData(
         (packet.m_speed * 3.6).round.toInt,
         packet.m_gear.toInt - 1,
         packet.m_sector1_time,
         packet.m_sector2_time,
         packet.m_last_lap_time,
-        packet.m_engineRate.toInt
+        packet.m_engineRate.toInt,
+        packet.m_throttle,
+        packet.m_brake,
+        packet.m_x / 4,
+        packet.m_z / 4
       )
   }
 }

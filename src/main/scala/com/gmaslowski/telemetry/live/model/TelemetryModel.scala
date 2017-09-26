@@ -11,7 +11,8 @@ class TelemetryModel(val changesHandler: ActorRef) extends Actor with ActorLoggi
 
   val informationActors: Seq[ActorRef] = Seq(
     context.actorOf(LiveInformation.props),
-    context.actorOf(CarConfigurationInformation.props)
+    context.actorOf(CarConfigurationInformation.props),
+    context.actorOf(LapInformation.props)
   )
 
   override def receive = {
