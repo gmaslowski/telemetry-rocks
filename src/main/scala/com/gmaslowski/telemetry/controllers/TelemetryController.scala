@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.gmaslowski.telemetry.FormulaOneTelemetry
-import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.CarData
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.JsonApi
 import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApiTransformers
 import com.gmaslowski.telemetry.ws.WebSocketClient
 import play.api.Logger
@@ -23,7 +23,7 @@ class TelemetryController @Inject()(cc: ControllerComponents)
     Ok(views.html.index())
   }
 
-  def ws = WebSocket.accept[String, CarData] { request =>
+  def ws = WebSocket.accept[String, JsonApi] { request =>
     ActorFlow.actorRef { out =>
       WebSocketClient.props(FormulaOneTelemetry.webSocketHandler.get, out)
     }

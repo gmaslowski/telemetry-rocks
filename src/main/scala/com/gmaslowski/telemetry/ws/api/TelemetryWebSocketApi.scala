@@ -1,32 +1,37 @@
 package com.gmaslowski.telemetry.ws.api
 
-import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.{CarData, Revs}
-import play.api.libs.json.Json
+import com.gmaslowski.telemetry.live.model.CarConfigurationInformation.{CarConfiguration, Engine, Team, Tyre}
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.{JsonApi, LiveData}
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 object TelemetryWebSocketApi {
 
-  case class CarData(speed: Int,
-                     gear: Int,
-                     tyreCompound: String,
-                     team: String,
-                     sector_1: Float,
-                     sector_2: Float,
-                     lap: Float,
-                     revs: Revs)
-  case class Revs(curRevs: Int, minRevs: Int, maxRevs: Int)
-  case class CarInitialData(car: String)
+  trait JsonApi
 
-  case class EngineInitialData()
-  case class GearboxInitialData()
+  case class LiveData(speed: Int,
+                      gear: Int,
+                      sector_1: Float,
+                      sector_2: Float,
+                      lap: Float,
+                      revs: Int,
+                      dataType: String = "LiveData") extends JsonApi
 
-  val NoRevs = Revs(0, 0, 0)
-  val EmptyCarData = CarData(0, 0, "", "", 0.0f, 0.0f, 0.0f, NoRevs)
+  val EmptyLiveData = LiveData(0, 0, 0.0f, 0.0f, 0.0f, 0)
 }
 
 trait TelemetryWebSocketApiTransformers {
-  implicit val revsFormat = Json.format[Revs]
-  implicit val carDataFormat = Json.format[CarData]
 
-  implicit val messageFlowTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[String, CarData]
+  implicit val jsonApiWrites: Writes[JsonApi] = {
+    case s: LiveData => liveDataWrites.writes(s)
+    case s: CarConfiguration => carConfigurationWrites.writes(s)
+  }
+
+  implicit val liveDataWrites = Json.writes[LiveData]
+  implicit val tyreWrites = Json.writes[Tyre]
+  implicit val engineWrites = Json.writes[Engine]
+  implicit val teamWrites = Json.writes[Team]
+  implicit val carConfigurationWrites = Json.writes[CarConfiguration]
+
+  implicit val jsonApiTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[String, JsonApi]
 }

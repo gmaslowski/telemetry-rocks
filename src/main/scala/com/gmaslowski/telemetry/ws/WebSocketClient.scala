@@ -1,8 +1,8 @@
 package com.gmaslowski.telemetry.ws
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.gmaslowski.telemetry.ws.WebSocketHandler.Register
-import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.CarData
+import com.gmaslowski.telemetry.ws.WebSocketHandler.RegisterWsClient
+import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.{JsonApi, LiveData}
 
 object WebSocketClient {
   def props(webSocketHandler: ActorRef, out: ActorRef) = Props(classOf[WebSocketClient], webSocketHandler, out)
@@ -10,9 +10,9 @@ object WebSocketClient {
 
 class WebSocketClient(val webSocketHandler: ActorRef, val out: ActorRef) extends Actor with ActorLogging {
 
-  webSocketHandler ! Register(self)
+  webSocketHandler ! RegisterWsClient(self)
 
   override def receive = {
-    case message: CarData => out ! message
+    case message: JsonApi => out ! message
   }
 }

@@ -1,6 +1,7 @@
 package com.gmaslowski.telemetry
 
 import akka.actor._
+import com.gmaslowski.telemetry.ModelChangesHandler.RegisterHandler
 import com.gmaslowski.telemetry.udp.UdpTelemetryPacketReceiver
 import com.gmaslowski.telemetry.demo.TelemetryDemoPlayer.PlayRecordedDemo
 import com.gmaslowski.telemetry.demo.{TelemetryDemoPlayer, TelemetryDemoRecorder}
@@ -28,6 +29,9 @@ class FormulaOneTelemetry extends Actor with ActorLogging {
       // record demo mode
       val wsHandler = context.actorOf(WebSocketHandler.props, "websocket-handler")
       FormulaOneTelemetry.webSocketHandler = Option(wsHandler)
+      val changesHandler = context.actorOf(ModelChangesHandler.props)
+      changesHandler ! RegisterHandler(wsHandler)
+
       val demoRecorder = context.actorOf(TelemetryDemoRecorder.props(config.getString("demo.filename")))
       val packetReceiver = context.actorOf(UdpTelemetryPacketReceiver.props(demoRecorder, host, port))
 
@@ -36,8 +40,10 @@ class FormulaOneTelemetry extends Actor with ActorLogging {
       // play demo mode
       val wsHandler = context.actorOf(WebSocketHandler.props, "websocket-handler")
       FormulaOneTelemetry.webSocketHandler = Option(wsHandler)
-      val packetTransformer = context.actorOf(TelemetryReceiver.props(wsHandler))
-      val packetReceiver = context.actorOf(UdpTelemetryPacketReceiver.props(packetTransformer, host, port))
+      val changesHandler = context.actorOf(ModelChangesHandler.props)
+      changesHandler ! RegisterHandler(wsHandler)
+
+      val packetTransformer = context.actorOf(TelemetryReceiver.props(changesHandler))
       val demoPlayer = context.actorOf(TelemetryDemoPlayer.props(packetTransformer))
 
       // give some chance for the websocket
@@ -48,8 +54,11 @@ class FormulaOneTelemetry extends Actor with ActorLogging {
       val wsHandler = context.actorOf(WebSocketHandler.props, "websocket-handler")
       // todo: not the way to do it !
       FormulaOneTelemetry.webSocketHandler = Option(wsHandler)
-      val packetTransformer = context.actorOf(TelemetryReceiver.props(wsHandler))
-      val packetReceiver = context.actorOf(UdpTelemetryPacketReceiver.props(packetTransformer, host, port))
+      val changesHandler = context.actorOf(ModelChangesHandler.props)
+      changesHandler ! RegisterHandler(wsHandler)
+
+      val telemetryReceiver = context.actorOf(TelemetryReceiver.props(changesHandler))
+      context.actorOf(UdpTelemetryPacketReceiver.props(telemetryReceiver, host, port))
     }
   }
 
