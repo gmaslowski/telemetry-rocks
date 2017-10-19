@@ -57,7 +57,6 @@ export default {
       console.log('WebSocket is open')
     }
     socket.onmessage = (message) => {
-      console.log(message)
       var json = JSON.parse(message.data)
       if (json.dataType === 'LiveData') {
         this.liveData = json

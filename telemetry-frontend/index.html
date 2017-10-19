@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>TelemetryDashoard</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>telemetry.rocks - Telemetry Dashboard</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+</head>
+<body>
+
+
+<v-app>
+  <v-navigation-drawer app></v-navigation-drawer>
+  <v-toolbar app></v-toolbar>
+  <main>
+    <v-content>
+      <v-container fluid>
+        <router-view>
+          <div id="app">
+          </div>
+
+
+        </router-view>
+      </v-container>
+    </v-content>
+  </main>
+  <v-footer app></v-footer>
+</v-app>
+
+</body>
 </html>
