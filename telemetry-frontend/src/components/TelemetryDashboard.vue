@@ -52,11 +52,12 @@ export default {
     }
   },
   mounted () {
-    var socket = new WebSocket('ws://localhost:9000/ws')
+    var socket = new WebSocket('ws://localhost:8081/ws')
     socket.onopen = () => {
       console.log('WebSocket is open')
     }
     socket.onmessage = (message) => {
+      console.log(message)
       var json = JSON.parse(message.data)
       if (json.dataType === 'LiveData') {
         this.liveData = json
