@@ -1,10 +1,9 @@
 package com.gmaslowski.telemetry
 
-import javax.inject.{Inject, Singleton}
+import akka.http.scaladsl.Http
+import com.gmaslowski.telemetry.controllers.WebSocketController._
 
-import akka.actor.ActorSystem
+object TelemetryBootstrap extends App with Akka.AkkaThings {
 
-@Singleton
-class TelemetryBootstrap @Inject()(system: ActorSystem) {
-  system.actorOf(FormulaOneTelemetry.props,"f1")
+  Http().bindAndHandle(route, "0.0.0.0", 8081)
 }

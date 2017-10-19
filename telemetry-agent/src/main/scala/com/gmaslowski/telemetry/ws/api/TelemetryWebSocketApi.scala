@@ -1,8 +1,8 @@
 package com.gmaslowski.telemetry.ws.api
 
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi._
-import play.api.libs.json.{Json, Writes}
-import play.api.mvc.WebSocket.MessageFlowTransformer
+import spray.json.DefaultJsonProtocol
 
 object TelemetryWebSocketApi {
 
@@ -40,20 +40,23 @@ object TelemetryWebSocketApi {
 
 }
 
-trait TelemetryWebSocketApiTransformers {
+trait JsonSupport extends SprayJsonSupport {
 
-  implicit val jsonApiWrites: Writes[JsonApi] = {
-    case s: LiveDataJson => liveDataWrites.writes(s)
-    case s: CarConfigurationJson => carConfigurationWrites.writes(s)
-    case s: LapDataJson => lapDataWrites.writes(s)
+  import DefaultJsonProtocol._
+  import spray.json._
+
+  implicit val teamJsonFormat = jsonFormat2(TeamJson)
+  implicit val tyreJsonFormat = jsonFormat2(TyreJson)
+  implicit val engineJsonFormat = jsonFormat2(EngineJson)
+  implicit val carConfigurationJsonFormat = jsonFormat4(CarConfigurationJson)
+
+  implicit val lapDataJsonFormat = jsonFormat4(LapDataJson)
+  implicit val liveDataJsonFormat = jsonFormat8(LiveDataJson)
+
+
+  def write(json: JsonApi) = json match {
+    case carConfiguration: CarConfigurationJson => carConfiguration.toJson
+    case liveData: LiveDataJson => liveData.toJson
+    case lapData: LapDataJson => lapData.toJson
   }
-
-  implicit val liveDataWrites = Json.writes[LiveDataJson]
-  implicit val lapDataWrites = Json.writes[LapDataJson]
-  implicit val tyreWrites = Json.writes[TyreJson]
-  implicit val engineWrites = Json.writes[EngineJson]
-  implicit val teamWrites = Json.writes[TeamJson]
-  implicit val carConfigurationWrites = Json.writes[CarConfigurationJson]
-
-  implicit val jsonApiTransformer = MessageFlowTransformer.jsonMessageFlowTransformer[String, JsonApi]
 }

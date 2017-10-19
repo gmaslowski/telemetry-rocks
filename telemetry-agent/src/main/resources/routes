@@ -1,2 +1,0 @@
-GET     /                           com.gmaslowski.telemetry.controllers.TelemetryController.index
-GET     /ws                         com.gmaslowski.telemetry.controllers.TelemetryController.ws
