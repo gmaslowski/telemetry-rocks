@@ -2,7 +2,7 @@ package com.gmaslowski.telemetry.live.model
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.util.ByteString
-import com.gmaslowski.telemetry.ByteStringReader._
+import ByteStringReader._
 import com.gmaslowski.telemetry.live.model.LapInformation.LapData
 import com.gmaslowski.telemetry.live.model.TelemetryModel.TelemetryData
 

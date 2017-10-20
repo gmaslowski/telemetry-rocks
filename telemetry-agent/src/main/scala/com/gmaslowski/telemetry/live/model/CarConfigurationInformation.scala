@@ -2,8 +2,8 @@ package com.gmaslowski.telemetry.live.model
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.util.ByteString
-import com.gmaslowski.telemetry.ByteStringReader._
-import com.gmaslowski.telemetry.F1Enums._
+import ByteStringReader._
+import F1Enums._
 import com.gmaslowski.telemetry.live.model.CarConfigurationInformation.{CarConfiguration, Engine, Team, Tyre}
 import com.gmaslowski.telemetry.live.model.TelemetryModel.TelemetryData
 

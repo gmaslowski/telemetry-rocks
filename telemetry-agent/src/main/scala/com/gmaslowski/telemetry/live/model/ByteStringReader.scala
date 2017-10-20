@@ -1,4 +1,4 @@
-package com.gmaslowski.telemetry
+package com.gmaslowski.telemetry.live.model
 
 import akka.util.ByteString
 
@@ -17,7 +17,7 @@ object ByteStringReader {
 
   implicit class ByteStringTelemetryPacket(val packet: ByteString) {
 
-    import com.gmaslowski.telemetry.ByteStringReaderSimpleTypes._
+    import ByteStringReaderSimpleTypes._
 
     def m_time: Float = packet.getFloat(0)
     def m_lapTime: Float = packet.getFloat(4)
