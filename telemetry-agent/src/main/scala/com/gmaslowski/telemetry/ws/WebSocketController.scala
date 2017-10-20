@@ -1,4 +1,4 @@
-package com.gmaslowski.telemetry.controllers
+package com.gmaslowski.telemetry.ws
 
 import akka.NotUsed
 import akka.actor.PoisonPill
@@ -6,10 +6,10 @@ import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.gmaslowski.telemetry.{Akka, FormulaOneTelemetry}
-import com.gmaslowski.telemetry.controllers.SingleWebSocketConnection.OutgoingMessage
+import com.gmaslowski.telemetry.ws.SingleWebSocketConnection.OutgoingMessage
 import com.gmaslowski.telemetry.ws.api.JsonSupport
 import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.JsonApi
+import com.gmaslowski.telemetry.{Akka, FormulaOneTelemetry}
 
 object WebSocketController extends Akka.AkkaThings with JsonSupport {
 

@@ -1,7 +1,7 @@
-package com.gmaslowski.telemetry
+package com.gmaslowski.telemetry.live.model
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import com.gmaslowski.telemetry.ModelChangesHandler.RegisterHandler
+import com.gmaslowski.telemetry.live.model.ModelChangesHandler.RegisterHandler
 
 object ModelChangesHandler {
   def props = Props(classOf[ModelChangesHandler])

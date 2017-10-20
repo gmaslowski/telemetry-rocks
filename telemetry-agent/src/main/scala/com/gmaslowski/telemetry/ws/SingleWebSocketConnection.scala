@@ -1,7 +1,7 @@
-package com.gmaslowski.telemetry.controllers
+package com.gmaslowski.telemetry.ws
 
 import akka.actor.{Actor, ActorRef, Props}
-import com.gmaslowski.telemetry.controllers.SingleWebSocketConnection.{Connected, OutgoingMessage}
+import com.gmaslowski.telemetry.ws.SingleWebSocketConnection.{Connected, OutgoingMessage}
 import com.gmaslowski.telemetry.ws.WebSocketHandler.RegisterWsClient
 import com.gmaslowski.telemetry.ws.api.TelemetryWebSocketApi.JsonApi
 

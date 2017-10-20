@@ -7,17 +7,18 @@ import akka.io.{IO, Udp}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import com.gmaslowski.telemetry.udp.UdpTelemetryPacketValidator.{InvalidPacket, ValidPacket, Validate}
+import com.typesafe.config.Config
 
 import scala.concurrent.duration._
 
 object UdpTelemetryPacketReceiver {
-  def props(transformer: ActorRef, host: String, port: Int) = Props(classOf[UdpTelemetryPacketReceiver], transformer, host, port)
+  def props(transformer: ActorRef, config: Config) = Props(classOf[UdpTelemetryPacketReceiver], transformer, config)
 }
 
-class UdpTelemetryPacketReceiver(val telemetryReceiver: ActorRef, val host: String, val port: Int) extends Actor with ActorLogging {
+class UdpTelemetryPacketReceiver(val telemetryReceiver: ActorRef, val config: Config) extends Actor with ActorLogging {
 
   import context.system
-  val udpAddress = new InetSocketAddress(host, port)
+  val udpAddress = new InetSocketAddress(config.getString("udp.listen.host"), config.getInt("udp.listen.port"))
 
   IO(Udp) ! Udp.Bind(self, udpAddress)
 
