@@ -1,5 +1,11 @@
-f1game-telemetry
-================
+# Important!
+This project evolved quite a bit. 
+
+It is currently available under [https://f1telemetry.rocks](https://f1telemetry.rocks) !
+
+The source code was moved to [https://gitlab.com/telemetry-rocks](https://gitlab.com/telemetry-rocks) - please contact me if you'd like to support the development!
+
+# f1game-telemetry
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fdf98753c2b94cc298cdbab140249635)](https://www.codacy.com/app/gmaslowski/f1game-telemetry?utm_source=github.com&utm_medium=referral&utm_content=gmaslowski/f1game-telemetry&utm_campaign=badger)
 
