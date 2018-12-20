@@ -1,0 +1,17 @@
+stages:
+  - docker-deploy
+
+docker:deploy:
+  stage: docker-deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker stack rm telemetry-infrastructure
+    - sleep 10
+    - docker stack deploy --with-registry-auth -c swarm/telemetry-infrastructure.yml telemetry-infrastructure
+  tags:
+    - deployment
+    - production
+  only:
+    - master

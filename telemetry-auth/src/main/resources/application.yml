@@ -1,0 +1,10 @@
+server.contextPath: /
+
+logging:
+  level:
+     org.springframework.security: DEBUG
+
+server:
+  port: 8082
+
+telemetry.users.url: http://localhost:8081/user/withPassword/

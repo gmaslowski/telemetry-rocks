@@ -1,0 +1,59 @@
+variables:
+  MAVEN_OPTS: -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2
+
+cache:
+  key: m2
+  untracked: true
+  paths:
+    - .m2
+
+stages:
+  - app-build
+  - docker-build
+  - docker-deploy
+
+app:build:
+  stage: app-build
+  image: maven:3.5.2-jdk-8-alpine
+  script:
+    - mvn clean install -B
+  tags:
+    - shared
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - docker
+      - target
+
+docker:build:
+  stage: docker-build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - mv target/telemetry-auth-1.0-SNAPSHOT.jar docker/telemetry-auth-1.0-SNAPSHOT.jar
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8} --pull docker
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8}
+  tags:
+    - shared
+  only:
+    - master
+
+docker:deploy:
+  stage: docker-deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - sed -i.bak s~IMAGE_TAG~${CI_COMMIT_SHA:0:8}~g swarm/telemetry-auth.yml
+    - sed -i.bak s~IMAGE_NAME~$CI_REGISTRY/$CI_PROJECT_PATH~g swarm/telemetry-auth.yml
+    - docker stack deploy --with-registry-auth -c swarm/telemetry-auth.yml telemetry-auth
+  tags:
+    - deployment
+    - production
+  only:
+    - master

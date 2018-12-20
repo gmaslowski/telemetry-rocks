@@ -1,0 +1,21 @@
+version: '3.4'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-analysis-spark:
+    image: IMAGE_NAME:IMAGE_TAG
+    networks:
+      - telemetry
+    deploy:
+      placement:
+        constraints:
+          - node.labels.analysis == true
+    environment:
+      MONGODB_URI: CI_MONGODB_URI
+      JAVA_OPTS: " -Xms1G -Xmx1G "
+    volumes:
+      - /opt/gcp.json:/opt/gcp.json

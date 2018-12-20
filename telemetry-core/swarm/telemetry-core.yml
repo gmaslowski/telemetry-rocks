@@ -1,0 +1,28 @@
+version: '3.2'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-core:
+    image: IMAGE_NAME:IMAGE_TAG
+    expose:
+      - "8001"
+    networks:
+      - telemetry
+    deploy:
+      labels:
+        - "traefik.backend=telemetry-core"
+        - "traefik.port=8001"
+        - "traefik.docker.network=telemetry"
+        - "traefik.frontend.rule=PathPrefixStrip: /api/core/"
+      placement:
+        constraints:
+          - node.labels.frontend == true
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: "/opt/gcp.json"
+    volumes:
+      - /opt/gcp.json:/opt/gcp.json
+

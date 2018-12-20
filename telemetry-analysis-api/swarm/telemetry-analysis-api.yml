@@ -1,0 +1,25 @@
+version: '3.4'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-analysis-api:
+    image: IMAGE_NAME:IMAGE_TAG
+    expose:
+      - "8081"
+    networks:
+      - telemetry
+    deploy:
+      labels:
+        - "traefik.backend=telemetry-analysis-api"
+        - "traefik.port=8081"
+        - "traefik.docker.network=telemetry"
+        - "traefik.frontend.rule=PathPrefixStrip: /api/analysis/"
+      placement:
+        constraints:
+          - node.labels.analysis == true
+    environment:
+      MONGODB_URI: CI_MONGODB_URI

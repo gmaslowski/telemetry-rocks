@@ -1,0 +1,25 @@
+version: '3.2'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-api-gateway:
+    image: traefik:1.4-alpine
+    command: --web --docker --docker.swarmmode --docker.domain=f1telemetry.rocks --logLevel=DEBUG --docker.watch
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik/traefik.toml:/traefik.toml
+      - /opt/traefik/acme.json:/acme.json
+    networks:
+      - telemetry
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+

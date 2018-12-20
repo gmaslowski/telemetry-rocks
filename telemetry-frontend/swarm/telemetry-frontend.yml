@@ -1,0 +1,24 @@
+version: '3.2'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-frontend:
+    image: IMAGE_NAME:IMAGE_TAG
+    expose:
+      - "80"
+    networks:
+      - telemetry
+    deploy:
+      labels:
+        - "traefik.backend=telemetry-frontend"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.docker.network=telemetry"
+        - "traefik.frontend.rule=PathPrefixStrip: /"
+      placement:
+        constraints:
+          - node.labels.frontend == true

@@ -1,0 +1,17 @@
+stages:
+  - docker-deploy
+
+docker:deploy:
+  stage: docker-deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker stack rm telemetry-gateway-api
+    - sleep 10
+    - docker stack deploy --with-registry-auth -c swarm/telemetry-gateway-api.yml telemetry-gateway-api
+  tags:
+    - deployment
+    - production
+  only:
+    - master

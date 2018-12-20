@@ -1,0 +1,23 @@
+version: '3.4'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+
+  telemetry-auth:
+    image: IMAGE_NAME:IMAGE_TAG
+    expose:
+      - "8082"
+    networks:
+      - telemetry
+    deploy:
+      labels:
+        - "traefik.backend=telemetry-auth"
+        - "traefik.port=8082"
+        - "traefik.docker.network=telemetry"
+        - "traefik.frontend.rule=PathPrefixStrip: /api/auth/"
+      placement:
+        constraints:
+          - node.labels.auth == true

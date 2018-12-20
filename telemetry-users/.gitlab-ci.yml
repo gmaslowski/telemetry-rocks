@@ -1,0 +1,58 @@
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  key: gradle
+  untracked: true
+  paths:
+    - .gradle/wrappers
+    - .gradle/caches
+    - .gradle/daemon
+
+stages:
+  - app-build
+  - docker-build
+  - docker-deploy
+
+app:build:
+  stage: app-build
+  image: gradle:4.2-jdk8-alpine
+  script:
+    - gradle clean build
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - docker
+      - build/libs
+
+docker:build:
+  stage: docker-build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - mv build/libs/telemetry-users-0.0.1-SNAPSHOT.jar docker/telemetry-users-0.0.1-SNAPSHOT.jar
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8} docker
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8}
+  only:
+    - master
+
+docker:deploy:
+  stage: docker-deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - sed -i.bak s~IMAGE_TAG~${CI_COMMIT_SHA:0:8}~g swarm/telemetry-users.yml
+    - sed -i.bak s~IMAGE_NAME~$CI_REGISTRY/$CI_PROJECT_PATH~g swarm/telemetry-users.yml
+    - sed -i.bak s~CI_MONGODB_URI~$CI_MONGODB_URI~g swarm/telemetry-users.yml
+    - docker stack deploy --with-registry-auth -c swarm/telemetry-users.yml telemetry-users
+  tags:
+    - deployment
+    - production
+  only:
+    - master

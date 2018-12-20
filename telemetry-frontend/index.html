@@ -1,26 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>telemetry.rocks - Telemetry Dashboard</title>
-  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
-</head>
-<body>
-<v-app>
-  <v-navigation-drawer app></v-navigation-drawer>
-  <v-toolbar app></v-toolbar>
-  <main>
-    <v-content>
-      <v-container fluid>
-        <router-view>
-          <div id="app">
-          </div>
-        </router-view>
-      </v-container>
-    </v-content>
-  </main>
-  <v-footer app></v-footer>
-</v-app>
-
-</body>
+<html lang="en">
+  <head>
+    <title>F1 Telemetry Rocks - f1telemetry.rocks</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/png" href="public/favicon-32x32.png" sizes="32x32">
+  </head>
+  <body style="background: linear-gradient(to bottom, rgba(240, 240, 240, 0.65) 0%, rgba(240, 240, 240, 0.65) 100%), url(static/bg.jpg) center center / cover no-repeat;">
+<!-- awful hack -->
+    <style>
+    .application--light {background: none}
+    </style>
+    <div id="app"></div>
+  </body>
 </html>

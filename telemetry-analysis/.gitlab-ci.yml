@@ -1,0 +1,74 @@
+variables:
+  SBT_VERSION: 0.13.16
+  SBT_OPTS: -Dsbt.global.base=sbt-cache/.sbtboot -Dsbt.boot.directory=sbt-cache/.boot -Dsbt.ivy.home=sbt-cache/.ivy
+
+cache:
+  key: sbt-cache
+  untracked: true
+  paths:
+    - sbt-cache/.ivy/cache
+    - sbt-cache/.boot
+    - sbt-cache/.sbtboot
+    - sbt-cache/target
+
+stages:
+  - app-compile
+  - app-test
+  - docker-stage
+  - docker-build
+  - docker-deploy
+
+app:compile:
+  stage: app-compile
+  image: hseeberger/scala-sbt
+  script:
+    - sbt clean compile
+  tags:
+    - shared
+
+docker:stage:
+  stage: docker-stage
+  image: hseeberger/scala-sbt
+  script:
+    - sbt docker:stage
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - target/docker
+  tags:
+    - shared
+  only:
+    - master
+
+docker:build:
+  stage: docker-build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8} --pull target/docker/stage
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:${CI_COMMIT_SHA:0:8}
+  tags:
+    - shared
+  only:
+    - master
+
+docker:deploy:
+  stage: docker-deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - sed -i.bak s~IMAGE_TAG~${CI_COMMIT_SHA:0:8}~g swarm/telemetry-analysis-spark.yml
+    - sed -i.bak s~IMAGE_NAME~$CI_REGISTRY/$CI_PROJECT_PATH~g swarm/telemetry-analysis-spark.yml
+    - sed -i.bak s~CI_MONGODB_URI~$CI_MONGODB_URI~g swarm/telemetry-analysis-spark.yml
+    - docker stack deploy --with-registry-auth -c swarm/telemetry-analysis-spark.yml telemetry-analysis-spark
+  tags:
+    - deployment
+    - production
+  only:
+    - master

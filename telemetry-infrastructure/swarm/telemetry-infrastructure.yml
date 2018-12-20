@@ -1,0 +1,31 @@
+version: '3.2'
+
+networks:
+  telemetry:
+    external: true
+
+services:
+ 
+  portainer:
+    image: portainer/portainer
+    command: --templates http://templates/templates.json
+    networks:
+      - telemetry
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.backend=portainer"
+        - "traefik.port=9000"
+        - "traefik.docker.network=telemetry"
+        - "traefik.frontend.rule=Host:infra.f1telemetry.rocks"
+      placement:
+        constraints:
+          - node.role == manager
+
+volumes:
+  portainer:
+    external:
+      name: portainer

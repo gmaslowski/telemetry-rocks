@@ -1,0 +1,8 @@
+version: "3.0"
+
+services:
+  mongo:
+    image: mongo:3.5
+    ports:
+      - "27017:27017"
+    command: mongod --bind_ip 0.0.0.0

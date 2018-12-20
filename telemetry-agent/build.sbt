@@ -1,9 +1,9 @@
-organization := "com.gmaslowski"
-name := "f1game-telemetry"
+organization := "rocks.telemetry"
+name := "telemetry-agent"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.4"
 
-val akkaV = "2.5.4"
+val akkaV = "2.5.7"
 val akkaHttpV = "10.0.10"
 val logbackV = "1.2.3"
 
