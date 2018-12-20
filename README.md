@@ -1,34 +1,33 @@
 # Important!
-This project evolved quite a bit. 
 
-It is currently available under [https://f1telemetry.rocks](https://f1telemetry.rocks) !
+This project evolved quite a bit, but *IS NOT* available anymore under [https://f1telemetry.rocks](https://f1telemetry.rocks), due to time and money reasons.
 
-The source code was moved to [https://gitlab.com/telemetry-rocks](https://gitlab.com/telemetry-rocks) - please contact me if you'd like to support the development!
+This project aimed to bring F1 20XX games telemetry data into the cloud:
+- to share it with friends
+- to view the progress
+- to have an online live-experience of telemetry data
+- to analyze track times, runs
+- and more!
+
+Current state doesn't have all of the features in place, but is a solid base for further development. Please contact me if you'd like to support the development!
 
 # f1game-telemetry
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fdf98753c2b94cc298cdbab140249635)](https://www.codacy.com/app/gmaslowski/f1game-telemetry?utm_source=github.com&utm_medium=referral&utm_content=gmaslowski/f1game-telemetry&utm_campaign=badger)
 
-### Development
-
-Just invoke (defaults to playing provided demo run):
-
-```
-sbt run
-```
-
-And navigate to: [http://localhost:9000](http://localhost:9000)
-
-__**Note**__: There's a demo file recorder using the `DemoRecorder` actor. By using the `DemoPlayer` actor it's
-possible to play dumped UDP telemetry (`demo.f1t`) from this run:
+### Some movies made during development
 
 [![F1 Demo Run](https://img.youtube.com/vi/749N3TgkqGU/0.jpg)](https://www.youtube.com/watch?v=749N3TgkqGU)
+[![Run with Gauges](https://img.youtube.com/vi/kb42ghIzQCM/0.jpg)](https://www.youtube.com/watch?v=kb42ghIzQCM)
 
-__**Note**__: For recording and playing recorded files, please see `demo` configuration section in `application.conf`:
-```
-demo {
-  record = false
-  play = true
-  filename = demo.f1t
-}
-```
+
+### Architecture and Development
+
+![alt text](https://raw.githubusercontent.com/gmaslowski/telemetry-rocks/master/architecture.png)
+
+Some technologies used:
+- Docker and Docker Swarm
+- Google Cloud Platform (VMs, PubSub)
+- Scala, Kotlin, Java, JavaScript
+- Akka, VueJs, Spring, Spark
+- MongoDB
